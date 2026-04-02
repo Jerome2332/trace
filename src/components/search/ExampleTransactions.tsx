@@ -5,19 +5,19 @@ import { AlertTriangle, TrendingDown, Cpu } from 'lucide-react'
 
 const EXAMPLES = [
   {
-    label: 'Anchor constraint failure',
+    label: 'Insufficient funds failure',
     icon: AlertTriangle,
-    signature: '5UfDuX7hXbMjRHMWnmkXmTJvJo5ZGpR5KkEMwyfSbPfMGDmMF1hBPiVW9JLv5zQyT5xJKBFhGxqQ8GKVdGxhUVK',
+    signature: '5EpSxptWjZ9UeJLij61yzbpV6wLSnf8u87R4MvzgfLDZwtH6P1U4WEn8QcndniZ7d7ydcj2kNgYv9hFFobXRcbqp',
   },
   {
     label: 'Jupiter slippage exceeded',
     icon: TrendingDown,
-    signature: '4zBk3vM8rN6ZCsFXAiVPYqs2C5RBmDNJnxHkJFLmKdBnQEwJ3rYnVLHFdP9KUELE6QzpEjDkE2YnkzVz5GSyZJu',
+    signature: '2L61GBxU5oGNKgPbTsnRyHoztDGMP932CywQx3DLYxA1UZQfUv66CgAqfTiLNSaV2sNghGNQW1n5X71nunqRRj3h',
   },
   {
-    label: 'Compute limit exceeded',
+    label: 'Jupiter route error',
     icon: Cpu,
-    signature: '2ByBQxKfyV3AT5mFGDhJNVf6Xqp1LWf4YLHXZQ2Fsd1C9PJN7Gm5xtRZCvWPgFJeYRnpkr2JJxuXZYfFbcZnKw',
+    signature: '5p5o8zmFmh9REqAk8ogMv4hR9SbPJvpSpa3Wf3XFLfP8d7Y8VQVfWeW1MjR13nRLGGpECamK5su9B2Y8j8KdmRek',
   },
 ]
 
