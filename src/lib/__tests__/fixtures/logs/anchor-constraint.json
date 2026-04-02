@@ -1,0 +1,9 @@
+[
+  "Program ComputeBudget111111111111111111111111111111 invoke [1]",
+  "Program ComputeBudget111111111111111111111111111111 success",
+  "Program 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin invoke [1]",
+  "Program log: Instruction: Initialize",
+  "Program log: AnchorError caused by account: vault. Error Code: ConstraintMut. Error Number: 2000. Error Message: A mut constraint was violated.",
+  "Program 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin consumed 12500 of 200000 compute units",
+  "Program 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin failed: custom program error: 0x7d0"
+]
