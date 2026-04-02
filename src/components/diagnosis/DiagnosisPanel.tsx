@@ -61,10 +61,12 @@ export function DiagnosisPanel({ signature, network, isFailed }: DiagnosisPanelP
 
   return (
     <div className="w-full rounded-lg border border-border bg-bg-surface overflow-hidden">
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={toggleExpanded}
-        className="flex w-full items-center justify-between px-4 py-3"
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleExpanded() }}
+        className="flex w-full items-center justify-between px-4 py-3 cursor-pointer"
       >
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-accent" />
@@ -92,7 +94,7 @@ export function DiagnosisPanel({ signature, network, isFailed }: DiagnosisPanelP
               : <ChevronRight className="h-4 w-4 text-text-tertiary" />
           )}
         </div>
-      </button>
+      </div>
 
       <AnimatePresence initial={false}>
         {expanded && (
