@@ -1,11 +1,19 @@
 'use client'
 
-import { CheckCircle, XCircle, Hash, Clock, Coins, Cpu, Tag } from 'lucide-react'
+import { useState } from 'react'
+import { CheckCircle, XCircle, Hash, Clock, Coins, Cpu, Tag, Copy, Check } from 'lucide-react'
 import type { TraceTransaction } from '@/types/transaction'
-import { formatSol, formatNumber, formatRelativeTime, formatAbsoluteTime } from '@/lib/utils'
+import { formatSol, formatNumber, formatRelativeTime, formatAbsoluteTime, shortenAddress } from '@/lib/utils'
 
 export function TxStatusBar({ transaction }: { transaction: TraceTransaction }) {
   const isSuccess = transaction.status === 'success'
+  const [copied, setCopied] = useState(false)
+
+  function copySignature() {
+    navigator.clipboard.writeText(transaction.signature)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div className="flex flex-row items-center gap-3 bg-bg-surface border-b border-border px-4 py-3 flex-wrap gap-y-2">
@@ -24,6 +32,20 @@ export function TxStatusBar({ transaction }: { transaction: TraceTransaction }) 
         )}
         {isSuccess ? 'Success' : 'Failed'}
       </div>
+
+      {/* Signature */}
+      <button
+        onClick={copySignature}
+        className="shrink-0 flex items-center gap-1.5 text-xs font-mono text-text-secondary hover:text-text-primary transition-colors"
+        title={transaction.signature}
+      >
+        {copied ? (
+          <Check className="w-3 h-3 text-success" />
+        ) : (
+          <Copy className="w-3 h-3 text-text-tertiary" />
+        )}
+        <span>{copied ? 'Copied!' : shortenAddress(transaction.signature, 6)}</span>
+      </button>
 
       {/* Slot */}
       <div className="shrink-0 flex items-center gap-1.5 text-xs">

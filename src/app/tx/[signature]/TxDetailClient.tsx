@@ -50,7 +50,7 @@ export function TxDetailClient({ signature, network }: TxDetailClientProps) {
   return (
     <>
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-hidden">
         {loading && <TxLoading />}
 
         {!loading && error && (
@@ -64,18 +64,18 @@ export function TxDetailClient({ signature, network }: TxDetailClientProps) {
             <TxStatusBar transaction={data} />
 
             {/* Desktop: 3-column grid */}
-            <div className="hidden lg:grid lg:grid-cols-[45%_30%_25%] gap-4 p-4">
-              <div className="bg-bg-surface rounded-lg border border-border p-4">
+            <div className="hidden lg:grid lg:grid-cols-[5fr_3fr_3fr] gap-4 p-4 overflow-hidden">
+              <div className="bg-bg-surface rounded-lg border border-border p-4 min-w-0 overflow-hidden">
                 <h3 className="text-xs font-medium text-text-tertiary uppercase tracking-wider mb-3">CPI Call Tree</h3>
                 <CpiTree nodes={data.cpiTree} />
               </div>
 
-              <div className="bg-bg-surface rounded-lg border border-border p-4">
+              <div className="bg-bg-surface rounded-lg border border-border p-4 min-w-0 overflow-hidden">
                 <h3 className="text-xs font-medium text-text-tertiary uppercase tracking-wider mb-3">Log Messages</h3>
                 <LogStream logs={data.parsedLogs} />
               </div>
 
-              <div className="bg-bg-surface rounded-lg border border-border p-4">
+              <div className="bg-bg-surface rounded-lg border border-border p-4 min-w-0 overflow-hidden">
                 <h3 className="text-xs font-medium text-text-tertiary uppercase tracking-wider mb-3">Account Changes</h3>
                 <AccountDiffTable diffs={data.accountDiffs} />
               </div>
