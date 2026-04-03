@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Search } from 'lucide-react'
+import { ArrowRight, Search, Loader2 } from 'lucide-react'
 import { extractSignatureFromUrl, validateSignature } from '@/lib/signature-validator'
 
 interface SearchBarProps {
@@ -14,6 +14,7 @@ interface SearchBarProps {
 export function SearchBar({ defaultValue = '', size = 'hero', autoFocus = false }: SearchBarProps) {
   const [input, setInput] = useState(defaultValue)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   function handleSubmit(e: FormEvent) {
@@ -35,6 +36,7 @@ export function SearchBar({ defaultValue = '', size = 'hero', autoFocus = false 
       ? localStorage.getItem('trace:network') ?? 'mainnet'
       : 'mainnet'
 
+    setLoading(true)
     router.push(`/tx/${sig}?network=${network}`)
   }
 
@@ -54,9 +56,13 @@ export function SearchBar({ defaultValue = '', size = 'hero', autoFocus = false 
         />
         <button
           type="submit"
-          className={`shrink-0 bg-accent hover:bg-accent-hover text-white rounded-md font-medium transition-colors flex items-center gap-1.5 ${isCompact ? 'px-3 py-1 text-xs' : 'px-4 py-2 text-sm'}`}
+          disabled={loading}
+          className={`shrink-0 bg-accent hover:bg-accent-hover text-white rounded-md font-medium transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed ${isCompact ? 'px-3 py-1 text-xs' : 'px-4 py-2 text-sm'}`}
         >
-          {isCompact ? <ArrowRight className="w-3.5 h-3.5" /> : <>Analyze <ArrowRight className="w-4 h-4" /></>}
+          {loading
+            ? (isCompact ? <>...</> : <Loader2 className="w-4 h-4 animate-spin" />)
+            : (isCompact ? <ArrowRight className="w-3.5 h-3.5" /> : <>Analyze <ArrowRight className="w-4 h-4" /></>)
+          }
         </button>
       </div>
       {error && (

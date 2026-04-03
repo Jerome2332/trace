@@ -8,10 +8,10 @@ interface LogStreamProps {
 }
 
 const LOG_LINE_STYLES: Record<LogLineType, string> = {
-  invoke: 'text-text-secondary',
-  success: 'text-success/60',
-  failed: 'text-error font-medium bg-error/5',
-  log: 'text-text-primary',
+  invoke: 'text-text-secondary font-medium border-l-[3px] border-accent/30 pl-2',
+  success: 'text-success/40',
+  failed: 'text-error font-semibold bg-error/5 border-l-[3px] border-error pl-2',
+  log: 'text-text-primary pl-4',
   data: 'text-text-tertiary',
   cu_consumed: 'text-text-tertiary italic',
   return: 'text-text-tertiary',
@@ -58,17 +58,23 @@ export function LogStream({ logs }: LogStreamProps) {
           </div>
         ) : (
           <div className="p-2">
-            {filtered.map((log) => (
+            {(() => {
+              const firstInvokeIdx = filtered.findIndex((l) => l.type === 'invoke')
+              return filtered.map((log, i) => {
+              const isInvoke = log.type === 'invoke'
+              return (
               <div
                 key={log.index}
-                className={`flex gap-2 px-2 py-0.5 font-mono text-xs rounded ${LOG_LINE_STYLES[log.type]}`}
+                className={`flex gap-2 px-2 py-0.5 font-mono text-xs rounded ${isInvoke && i !== firstInvokeIdx ? 'mt-2' : ''} ${LOG_LINE_STYLES[log.type]}`}
               >
                 <span className="w-8 shrink-0 text-right text-text-tertiary select-none">
                   {log.index}
                 </span>
                 <span className="whitespace-pre-wrap break-all">{log.raw}</span>
               </div>
-            ))}
+              )
+              })
+            })()}
           </div>
         )}
       </div>

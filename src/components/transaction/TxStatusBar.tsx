@@ -8,10 +8,10 @@ export function TxStatusBar({ transaction }: { transaction: TraceTransaction }) 
   const isSuccess = transaction.status === 'success'
 
   return (
-    <div className="flex flex-row items-center gap-3 bg-bg-surface border-b border-border px-4 py-3 flex-wrap">
+    <div className="flex flex-row items-center gap-3 bg-bg-surface border-b border-border px-4 py-3 flex-wrap gap-y-2">
       {/* Status badge */}
       <div
-        className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        className={`shrink-0 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
           isSuccess
             ? 'bg-success/10 text-success'
             : 'bg-error/10 text-error'
@@ -26,14 +26,14 @@ export function TxStatusBar({ transaction }: { transaction: TraceTransaction }) 
       </div>
 
       {/* Slot */}
-      <div className="flex items-center gap-1.5 text-xs">
+      <div className="shrink-0 flex items-center gap-1.5 text-xs">
         <Hash className="w-3.5 h-3.5 text-text-tertiary" />
         <span className="text-text-secondary">Slot</span>
         <span className="text-text-primary font-mono">{formatNumber(transaction.slot)}</span>
       </div>
 
       {/* Time */}
-      <div className="flex items-center gap-1.5 text-xs">
+      <div className="shrink-0 flex items-center gap-1.5 text-xs">
         <Clock className="w-3.5 h-3.5 text-text-tertiary" />
         <span
           className="text-text-primary"
@@ -44,14 +44,14 @@ export function TxStatusBar({ transaction }: { transaction: TraceTransaction }) 
       </div>
 
       {/* Fee */}
-      <div className="flex items-center gap-1.5 text-xs">
+      <div className="shrink-0 flex items-center gap-1.5 text-xs">
         <Coins className="w-3.5 h-3.5 text-text-tertiary" />
         <span className="text-text-secondary">Fee</span>
         <span className="text-text-primary font-mono">{formatSol(transaction.fee)}</span>
       </div>
 
       {/* Compute units */}
-      <div className="flex items-center gap-1.5 text-xs">
+      <div className="shrink-0 flex items-center gap-1.5 text-xs">
         <Cpu className="w-3.5 h-3.5 text-text-tertiary" />
         <span className="text-text-secondary">CUs:</span>
         <span className="text-text-primary font-mono">
@@ -64,7 +64,7 @@ export function TxStatusBar({ transaction }: { transaction: TraceTransaction }) 
 
       {/* Transaction type */}
       {transaction.txType && (
-        <div className="flex items-center gap-1.5 text-xs">
+        <div className="shrink-0 flex items-center gap-1.5 text-xs">
           <Tag className="w-3.5 h-3.5 text-text-tertiary" />
           <span className="text-text-secondary bg-bg-surface-2 px-2 py-0.5 rounded">
             {transaction.txType}

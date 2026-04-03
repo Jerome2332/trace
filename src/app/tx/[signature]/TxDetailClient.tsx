@@ -64,7 +64,7 @@ export function TxDetailClient({ signature, network }: TxDetailClientProps) {
             <TxStatusBar transaction={data} />
 
             {/* Desktop: 3-column grid */}
-            <div className="hidden lg:grid lg:grid-cols-3 gap-4 p-4">
+            <div className="hidden lg:grid lg:grid-cols-[45%_30%_25%] gap-4 p-4">
               <div className="bg-bg-surface rounded-lg border border-border p-4">
                 <h3 className="text-xs font-medium text-text-tertiary uppercase tracking-wider mb-3">CPI Call Tree</h3>
                 <CpiTree nodes={data.cpiTree} />

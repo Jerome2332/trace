@@ -107,8 +107,15 @@ export function AccountDiffTable({ diffs }: AccountDiffTableProps) {
     [],
   )
 
-  const filtered = showAll ? diffs : diffs.filter(hasChanges)
-  const hiddenCount = diffs.length - diffs.filter(hasChanges).length
+  const changed = diffs.filter(hasChanges)
+  const filtered = showAll
+    ? diffs
+    : diffs.length <= 5
+      ? diffs
+      : changed.length >= 5
+        ? changed
+        : diffs.slice(0, 5)
+  const hiddenCount = diffs.length - filtered.length
 
   const handleCopy = useCallback((address: string) => {
     navigator.clipboard.writeText(address)

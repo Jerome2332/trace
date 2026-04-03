@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: 'Trace — Solana Transaction Debugger',
   description:
     'Debug any Solana transaction. See the full CPI call tree, account changes, and an AI diagnosis of what went wrong.',
+  openGraph: {
+    title: 'Trace — Solana Transaction Debugger',
+    description: 'Debug any Solana transaction with visual CPI trees and AI-powered diagnosis.',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({
