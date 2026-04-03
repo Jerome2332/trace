@@ -1,21 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import type { ParsedLog, LogLineType } from '@/types/log-parser'
+import type { ParsedLog } from '@/types/log-parser'
 
 interface LogStreamProps {
   logs: ParsedLog[]
-}
-
-const LOG_LINE_STYLES: Record<LogLineType, string> = {
-  invoke: 'text-text-secondary font-medium border-l-[3px] border-accent/30 pl-2',
-  success: 'text-success/40',
-  failed: 'text-error font-semibold bg-error/5 border-l-[3px] border-error pl-2',
-  log: 'text-text-primary pl-4',
-  data: 'text-text-tertiary',
-  cu_consumed: 'text-text-tertiary italic',
-  return: 'text-text-tertiary',
-  unknown: 'text-text-tertiary',
 }
 
 export function LogStream({ logs }: LogStreamProps) {
@@ -30,32 +19,31 @@ export function LogStream({ logs }: LogStreamProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <button
           onClick={() => setShowCu(!showCu)}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs transition-colors border ${
+          className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider transition-colors ${
             showCu
-              ? 'bg-accent/10 border-accent/30 text-accent'
-              : 'bg-bg-surface-2 border-border text-text-tertiary hover:text-text-secondary'
+              ? 'bg-accent/15 text-accent'
+              : 'bg-bg-surface-2 text-text-tertiary hover:text-text-secondary'
           }`}
         >
-          <div className={`w-2 h-2 rounded-full ${showCu ? 'bg-accent' : 'bg-text-tertiary/30'}`} />
-          CU lines
+          cu
         </button>
         <button
           onClick={() => setShowData(!showData)}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs transition-colors border ${
+          className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider transition-colors ${
             showData
-              ? 'bg-accent/10 border-accent/30 text-accent'
-              : 'bg-bg-surface-2 border-border text-text-tertiary hover:text-text-secondary'
+              ? 'bg-accent/15 text-accent'
+              : 'bg-bg-surface-2 text-text-tertiary hover:text-text-secondary'
           }`}
         >
-          <div className={`w-2 h-2 rounded-full ${showData ? 'bg-accent' : 'bg-text-tertiary/30'}`} />
-          Data lines
+          data
         </button>
+        <span className="text-[10px] text-text-tertiary ml-auto">{filtered.length} lines</span>
       </div>
 
-      <div className="max-h-[500px] overflow-y-auto overflow-x-hidden rounded-lg border border-border bg-bg-surface">
+      <div className="max-h-[500px] overflow-y-auto overflow-x-hidden rounded-lg bg-[#0d0d14] ring-1 ring-white/[0.06]">
         {filtered.length === 0 ? (
           <div className="p-4 text-center text-xs text-text-tertiary">
             No log lines to display
@@ -69,26 +57,60 @@ export function LogStream({ logs }: LogStreamProps) {
 }
 
 function LogLines({ logs }: { logs: ParsedLog[] }) {
-  const firstInvokeIdx = logs.findIndex((l) => l.type === 'invoke')
-
   return (
-    <div className="p-2">
+    <div className="font-mono text-[11px] leading-[18px]">
       {logs.map((log, i) => {
-        const isInvoke = log.type === 'invoke'
-        const addGap = isInvoke && i !== firstInvokeIdx
+        const prev = i > 0 ? logs[i - 1] : undefined
+        const showDivider = log.type === 'invoke' && prev && prev.type !== 'invoke' && i > 0
 
         return (
-          <div
-            key={log.index}
-            className={`flex gap-2 px-2 py-0.5 font-mono text-xs rounded ${addGap ? 'mt-2' : ''} ${LOG_LINE_STYLES[log.type]}`}
-          >
-            <span className="w-8 shrink-0 text-right text-text-tertiary select-none">
-              {log.index}
-            </span>
-            <span className="truncate">{log.raw}</span>
+          <div key={log.index}>
+            {showDivider && <div className="border-t border-white/[0.04] mx-3" />}
+            <div
+              className={`flex items-start gap-0 hover:bg-white/[0.02] transition-colors ${
+                log.type === 'failed' ? 'bg-red-500/[0.06]' : ''
+              }`}
+            >
+              {/* Line number gutter */}
+              <span className="w-9 shrink-0 text-right pr-3 py-px text-text-tertiary/40 select-none tabular-nums">
+                {log.index}
+              </span>
+
+              {/* Type indicator */}
+              <span className="w-[3px] shrink-0 self-stretch mr-2" style={getIndicatorStyle(log.type)} />
+
+              {/* Content */}
+              <span className={`py-px pr-3 truncate ${getTextStyle(log.type)}`}>
+                {log.raw}
+              </span>
+            </div>
           </div>
         )
       })}
     </div>
   )
+}
+
+function getIndicatorStyle(type: string): React.CSSProperties {
+  switch (type) {
+    case 'invoke': return { backgroundColor: '#7c5cfc' }
+    case 'success': return { backgroundColor: '#22c55e', opacity: 0.3 }
+    case 'failed': return { backgroundColor: '#ef4444' }
+    case 'log': return { backgroundColor: 'transparent' }
+    case 'cu_consumed': return { backgroundColor: 'transparent' }
+    default: return { backgroundColor: 'transparent' }
+  }
+}
+
+function getTextStyle(type: string): string {
+  switch (type) {
+    case 'invoke': return 'text-[#a78bfa]'
+    case 'success': return 'text-[#4ade80]/40'
+    case 'failed': return 'text-[#f87171] font-medium'
+    case 'log': return 'text-[#c8c8d8]'
+    case 'data': return 'text-text-tertiary'
+    case 'cu_consumed': return 'text-text-tertiary/60'
+    case 'return': return 'text-text-tertiary/60'
+    default: return 'text-text-tertiary'
+  }
 }

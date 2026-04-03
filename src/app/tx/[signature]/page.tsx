@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { signature } = await params
   const short = signature.slice(0, 8)
   return {
-    title: `Trace: ${short}... — Solana Transaction Debugger`,
+    title: `Trace: ${short}... - Solana Transaction Debugger`,
   }
 }
 
