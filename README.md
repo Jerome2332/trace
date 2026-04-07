@@ -47,6 +47,8 @@ Paste tx signature
 6. For failed transactions, Claude AI analyzes the trace and produces a one-sentence root cause, technical explanation, and suggested fix
 7. Everything renders in a three-panel layout with the diagnosis below
 
+![Trace - transaction detail view](public/screenshots/trace-demo.png)
+
 ---
 
 ## Features
@@ -55,7 +57,7 @@ Paste tx signature
 - **Account Diff Table** -- before/after balances for SOL and tokens, with click-to-copy addresses and role badges (signer, fee payer, new account)
 - **Log Stream** -- color-coded raw log messages with filtering for CU and data lines
 - **AI Diagnosis** -- Claude-powered root cause analysis, error code decoding, and suggested fixes with code snippets. Auto-triggers on failed transactions.
-- **19 Known Programs** -- Jupiter, Whirlpool, Metaplex, SPL Token, System Program, and more resolved to human-readable names
+- **27 Known Programs** -- Jupiter, Whirlpool, Raydium, Marinade, Jito, Tensor, Pyth, Metaplex, SPL Token, System Program, and more resolved to human-readable names
 - **Network Support** -- mainnet, devnet, testnet with persistent selector
 - **Shareable URLs** -- every trace has a permalink at `/tx/[signature]`
 - **Explorer Links** -- one-click to Solscan and Solana Explorer

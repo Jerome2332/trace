@@ -13,6 +13,7 @@ import { AccountDiffTable } from '@/components/account-diff/AccountDiffTable'
 import { DiagnosisPanel } from '@/components/diagnosis/DiagnosisPanel'
 import { ShareFooter } from '@/components/transaction/ShareFooter'
 import { MobileTabs } from '@/components/transaction/MobileTabs'
+import { TxSuccessSummary } from '@/components/transaction/TxSuccessSummary'
 import type { TraceTransaction } from '@/types/transaction'
 
 interface TxDetailClientProps {
@@ -28,6 +29,20 @@ export function TxDetailClient({ signature, network }: TxDetailClientProps) {
   const fetchTx = useCallback(async () => {
     setLoading(true)
     setError(null)
+
+    const cacheKey = `trace:tx:${signature}:${network}`
+
+    try {
+      const cached = sessionStorage.getItem(cacheKey)
+      if (cached) {
+        setData(JSON.parse(cached) as TraceTransaction)
+        setLoading(false)
+        return
+      }
+    } catch {
+      // sessionStorage unavailable or corrupt, continue to fetch
+    }
+
     try {
       const res = await fetch(`/api/transaction?sig=${signature}&network=${network}`)
       const json = await res.json()
@@ -36,6 +51,7 @@ export function TxDetailClient({ signature, network }: TxDetailClientProps) {
         return
       }
       setData(json.data)
+      try { sessionStorage.setItem(cacheKey, JSON.stringify(json.data)) } catch {}
     } catch {
       setError({ code: 'NETWORK_ERROR', message: 'Failed to fetch transaction. Check your connection.' })
     } finally {
@@ -62,6 +78,8 @@ export function TxDetailClient({ signature, network }: TxDetailClientProps) {
         {!loading && data && (
           <>
             <TxStatusBar transaction={data} />
+
+            {data.status === 'success' && <TxSuccessSummary transaction={data} />}
 
             {/* Desktop: 3-column grid */}
             <div className="hidden lg:grid lg:grid-cols-[5fr_3fr_3fr] gap-4 p-4 overflow-hidden">

@@ -25,6 +25,9 @@ export function Header() {
       )}
 
       <div className="ml-auto flex items-center gap-3">
+        <Link href="/docs" className="text-xs text-text-secondary hover:text-text-primary transition-colors">
+          Docs
+        </Link>
         <NetworkSelector />
       </div>
     </header>

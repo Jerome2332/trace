@@ -24,4 +24,12 @@ export const KNOWN_PROGRAMS: Record<string, KnownProgram> = {
   'Vote111111111111111111111111111111111111111': { name: 'Vote Program', shortName: 'Vote', category: 'native' },
   'Stake11111111111111111111111111111111111111': { name: 'Stake Program', shortName: 'Stake', category: 'native' },
   'BPFLoaderUpgradeab1e11111111111111111111111': { name: 'BPF Loader', shortName: 'BPFLoader', category: 'native' },
+  '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8': { name: 'Raydium AMM', shortName: 'Raydium', category: 'defi' },
+  'CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK': { name: 'Raydium CLMM', shortName: 'RaydiumCLMM', category: 'defi' },
+  'MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD': { name: 'Marinade Finance', shortName: 'Marinade', category: 'defi' },
+  'T1pyyaTNZsKv2WcRAB8oVnk93mLJw2XzjtVYqCsaHqt': { name: 'Jito Tip Payment', shortName: 'Jito', category: 'defi' },
+  'TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN': { name: 'Tensor Swap', shortName: 'Tensor', category: 'nft' },
+  'FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH': { name: 'Pyth Oracle', shortName: 'Pyth', category: 'defi' },
+  'SW1TCH7qEPTdLsDHRgPuMQjbQxKdH2aBStViMFnt64f': { name: 'Switchboard Oracle', shortName: 'Switchboard', category: 'defi' },
+  'CLoCKyJ6DXBhqB2TYhBe1fkAvmqP3Z58WN8PFkLiwNsX': { name: 'Clockwork', shortName: 'Clockwork', category: 'native' },
 }

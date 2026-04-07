@@ -21,6 +21,11 @@ export const metadata: Metadata = {
     description: 'Debug any Solana transaction with visual CPI trees and AI-powered diagnosis.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Trace - Solana Transaction Debugger',
+    description: 'Debug any Solana transaction with visual CPI trees and AI-powered diagnosis.',
+  },
 }
 
 export default function RootLayout({
