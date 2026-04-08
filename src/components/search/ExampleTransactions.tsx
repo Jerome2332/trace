@@ -2,22 +2,25 @@
 
 import Link from 'next/link'
 import { AlertTriangle, TrendingDown, Cpu } from 'lucide-react'
+import { EXAMPLE_SIGNATURES } from '@/lib/example-transactions'
+
+const sigs = [...EXAMPLE_SIGNATURES]
 
 const EXAMPLES = [
   {
     label: 'Jupiter slippage exceeded',
     icon: TrendingDown,
-    signature: 'xJmAM36oPJmGppGLbxLdnXXDE6qLuXUiPFUWs6CA9ogFDPVyzKwHLZpyYdQoCFzLZQcvBURdoqR5Bfm4gCBFEKr',
+    signature: sigs[0]!,
   },
   {
     label: 'Compute budget exceeded',
     icon: Cpu,
-    signature: '5N6bHSspCzb3Qvmtpze57dpFNH46WnGYos7jKKhsFgYBRsRbVAdHGa6SvJwt7FjvWLoG3w3qoWgZpMAwGvULWPRh',
+    signature: sigs[1]!,
   },
   {
     label: 'Program execution failed',
     icon: AlertTriangle,
-    signature: '7yKrxgQ1hGx2agfkS6bswFE3cGwRJpxMHXuciEs58UPbFjTfSxyLFEcXXywuMbrLENRSusvWMDirZv42QnAYYgA',
+    signature: sigs[2]!,
   },
 ]
 

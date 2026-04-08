@@ -1,0 +1,5 @@
+export const EXAMPLE_SIGNATURES = new Set([
+  'xJmAM36oPJmGppGLbxLdnXXDE6qLuXUiPFUWs6CA9ogFDPVyzKwHLZpyYdQoCFzLZQcvBURdoqR5Bfm4gCBFEKr',
+  '5N6bHSspCzb3Qvmtpze57dpFNH46WnGYos7jKKhsFgYBRsRbVAdHGa6SvJwt7FjvWLoG3w3qoWgZpMAwGvULWPRh',
+  '7yKrxgQ1hGx2agfkS6bswFE3cGwRJpxMHXuciEs58UPbFjTfSxyLFEcXXywuMbrLENRSusvWMDirZv42QnAYYgA',
+])

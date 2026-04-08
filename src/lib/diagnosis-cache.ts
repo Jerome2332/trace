@@ -1,4 +1,5 @@
 import { Redis } from '@upstash/redis'
+import { EXAMPLE_SIGNATURES } from './example-transactions'
 
 type Network = 'mainnet' | 'devnet' | 'testnet'
 
@@ -36,7 +37,9 @@ export async function setCachedTransaction<T>(
   if (!redis) return
 
   try {
-    await redis.set(`trace:tx:${signature}:${network}`, data, { ex: TX_TTL })
+    const ttl = EXAMPLE_SIGNATURES.has(signature) ? undefined : TX_TTL
+    const opts = ttl ? { ex: ttl } : {}
+    await redis.set(`trace:tx:${signature}:${network}`, data, opts)
   } catch {
     // Cache write failure is non-critical
   }
