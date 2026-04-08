@@ -5,19 +5,19 @@ import { AlertTriangle, TrendingDown, Cpu } from 'lucide-react'
 
 const EXAMPLES = [
   {
-    label: 'Insufficient funds failure',
-    icon: AlertTriangle,
-    signature: '5EpSxptWjZ9UeJLij61yzbpV6wLSnf8u87R4MvzgfLDZwtH6P1U4WEn8QcndniZ7d7ydcj2kNgYv9hFFobXRcbqp',
-  },
-  {
     label: 'Jupiter slippage exceeded',
     icon: TrendingDown,
-    signature: '2L61GBxU5oGNKgPbTsnRyHoztDGMP932CywQx3DLYxA1UZQfUv66CgAqfTiLNSaV2sNghGNQW1n5X71nunqRRj3h',
+    signature: 'xJmAM36oPJmGppGLbxLdnXXDE6qLuXUiPFUWs6CA9ogFDPVyzKwHLZpyYdQoCFzLZQcvBURdoqR5Bfm4gCBFEKr',
   },
   {
-    label: 'Jupiter route error',
+    label: 'Compute budget exceeded',
     icon: Cpu,
-    signature: '5p5o8zmFmh9REqAk8ogMv4hR9SbPJvpSpa3Wf3XFLfP8d7Y8VQVfWeW1MjR13nRLGGpECamK5su9B2Y8j8KdmRek',
+    signature: '5N6bHSspCzb3Qvmtpze57dpFNH46WnGYos7jKKhsFgYBRsRbVAdHGa6SvJwt7FjvWLoG3w3qoWgZpMAwGvULWPRh',
+  },
+  {
+    label: 'Program execution failed',
+    icon: AlertTriangle,
+    signature: '7yKrxgQ1hGx2agfkS6bswFE3cGwRJpxMHXuciEs58UPbFjTfSxyLFEcXXywuMbrLENRSusvWMDirZv42QnAYYgA',
   },
 ]
 
