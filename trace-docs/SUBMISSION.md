@@ -1,37 +1,27 @@
 # Trace - Submission Description
 
-Tenderly raised $48M building transaction debugging for EVM chains. Solana has nothing equivalent. Developers hit a failed transaction, copy the signature into Solscan, and stare at a wall of raw logs trying to figure out what went wrong. There is no visual call tree, no state diff view, no explanation of why it broke.
+When a Solana transaction fails, you get a hex code and a wall of raw logs. No call tree. No state diffs. No explanation. Every developer has spent 30 minutes reading `Program X failed: custom program error: 0x7d0` and manually tracing through CPI calls to find the root cause.
 
-Trace fixes this. Paste a transaction signature, get three things instantly: a color-coded CPI call tree showing exactly which program called which, account state diffs showing what changed, and an AI-generated diagnosis explaining the root cause and how to fix it.
+Tenderly solved this for EVM and raised $48M doing it. Solana has nothing equivalent. That's the gap Trace fills.
 
-The platform works with any Solana program, whether built with Anchor, native Rust, or SPL. No source code upload required. Trace parses the transaction directly from the RPC response and reconstructs the execution flow from raw logs.
+Trace does one thing: instant transaction understanding. Paste any signature, get the full picture in 5 seconds. A color-coded CPI call tree showing which programs called which and where it broke. Account state diffs showing exactly what changed. A log stream with visual grouping by invocation. And an AI diagnosis that names the root cause in one sentence and suggests a code fix.
 
-The parser uses 7 regex patterns to extract inner instructions and build a structured call tree. It handles edge cases that trip up simpler parsers: truncated log messages, self-CPI (programs calling themselves), and depth inconsistencies where the log output doesn't match the actual call stack. A depth-stack algorithm reconstructs the tree, assigns distinct colors per program, and propagates failure status up through parent calls so you can see at a glance where things went wrong.
+These four views aren't separate features. They're four lenses on the same data. The product is comprehension, the ability to look at any Solana transaction and immediately understand what happened, whether it succeeded or failed.
 
-Account diffs come from preBalances and postBalances in the transaction response. No archive RPC node needed. 19 known Solana programs (System, Token, Associated Token Account, Metaplex, and others) are resolved to human-readable names instead of raw public keys.
+The parser handles the hard cases other tools skip: truncated log messages, programs calling themselves (self-CPI), and depth inconsistencies where the runtime log output doesn't match the actual call stack. A depth-stack algorithm reconstructs the full tree, assigns distinct colors per program, and propagates failure status upward so broken call paths are visible at a glance. 27 known programs are resolved to human-readable names.
 
-The AI diagnosis sends a structured representation of the transaction to Claude Sonnet and returns JSON with three fields: root cause, technical detail, and suggested fix. This turns a 30-minute debugging session into a 30-second one.
+Account diffs come directly from preBalances and postBalances in the transaction response. No archive RPC node required. The AI diagnosis sends a structured representation of the transaction to Claude Sonnet and returns typed JSON: root cause, technical detail, error code, and suggested fix. What takes 30 minutes manually takes 5 seconds with Trace.
 
-Trace is API-first. Two public REST endpoints (/api/transaction for parsed data, /api/diagnose for AI analysis) let developers integrate debugging into their own tools and CI pipelines. Results are cached in Upstash Redis with a 24-hour TTL to keep response times fast and RPC costs low.
+The business model is a proactiveness ladder. The free website is the entry point, developers paste a signature and get the full trace. Pro ($49/mo) adds a GitHub Action that catches failed Anchor tests and posts the AI diagnosis directly as a PR comment with suggested code fixes. Team ($199/mo) monitors your deployed program's mainnet transactions, catches user-facing failures, and auto-files GitHub Issues with grouped diagnoses and affected accounts. Each tier adds automation. Revenue grows as the customer's program grows from development to production.
 
-The target market is the 3,000 to 5,000 monthly active Solana developers tracked by Electric Capital, a number growing over 40% year-over-year. The business model is straightforward: a free web UI drives adoption, and paid API tiers (rate limits, batch processing, webhook alerts) generate revenue post-hackathon.
+The core engine is open-source under MIT. Two public REST endpoints (/api/transaction and /api/diagnose) let developers integrate Trace into their own tooling. This composability is intentional. Anchor CLI plugins, GitHub Actions, and VS Code extensions all build on the same API. The more the ecosystem integrates with Trace, the stickier it becomes.
 
-The codebase is open-source under MIT, built with Next.js 16, TypeScript in strict mode, Tailwind CSS v4, and Framer Motion for the UI. The test suite has 28 tests covering the parser, tree builder, and API layer.
-
-The roadmap has three milestones: v1.1 adds an Anchor CLI plugin so developers can debug without leaving the terminal, v1.2 adds team workspaces with shared transaction history, and v2.0 introduces real-time monitoring that alerts when specific programs fail in production.
+The target market is the 3,000-5,000 monthly active Solana developers tracked by Electric Capital, growing 40%+ year-over-year. Programs are getting more complex every month. Multi-CPI transactions, token extensions, compressed state. Debugging is harder, not easier. The AI models just got accurate enough to diagnose Solana errors reliably. This window opened recently. We're building in it.
 
 ## Technical Description
 
-Trace is a Next.js 16 application written in TypeScript (strict mode) that parses Solana transaction data into structured debugging views. The core engine has three components: a log parser using 7 regex patterns to extract inner instructions from raw transaction logs, a CPI tree builder using a depth-stack algorithm that handles self-CPI and depth inconsistencies, and an account diff calculator using preBalances/postBalances from the RPC response.
-
-The parser resolves 19 known program addresses to human-readable names and assigns per-program colors for the visual call tree. Failure states propagate upward through the tree so parent nodes reflect child failures.
-
-AI diagnosis sends structured transaction data to Claude Sonnet via the Anthropic API, returning typed JSON (root cause, technical detail, suggested fix). Results are cached in Upstash Redis (24h TTL).
-
-The API exposes two REST endpoints: GET /api/transaction?sig={signature} returns the parsed tree and diffs, GET /api/diagnose?sig={signature} returns the AI analysis. Both are stateless and cacheable.
-
-The frontend uses Tailwind CSS v4 and Framer Motion for animated tree expansion and state transitions. The test suite (Vitest, 28 tests) covers parser edge cases, tree construction, and API response contracts.
+Next.js 16, TypeScript (strict mode), Tailwind CSS v4, Framer Motion. Core engine: log parser (7 regex patterns handling self-CPI, truncated logs, depth inconsistencies), CPI tree builder (depth-stack algorithm with failure propagation and 27 known program names), account diff calculator (SOL + token deltas from RPC pre/post balances). AI diagnosis via Claude Sonnet, structured JSON output, cached in Upstash Redis. 28 unit tests covering parser edge cases, tree construction, and fixture-based integration tests with real mainnet transaction logs. Public API: GET /api/transaction, POST /api/diagnose. Mobile responsive with tabbed layout. OG image generation via Next.js ImageResponse.
 
 ## Team
 
-Solo developer. Jerome (GitHub: Jerome2332). Full-stack TypeScript engineer building developer tools for Solana.
+Solo developer. Jerome (GitHub: Jerome2332). Full-stack TypeScript engineer building developer tools for Solana. CODA co-founder. 4 years Solana experience.
