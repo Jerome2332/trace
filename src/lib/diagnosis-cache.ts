@@ -6,11 +6,18 @@ type Network = 'mainnet' | 'devnet' | 'testnet'
 const TX_TTL = 86400 // 24 hours
 const DIAGNOSIS_TTL = 86400
 
+let redisInstance: Redis | null | undefined = undefined
+
 function getRedis(): Redis | null {
+  if (redisInstance !== undefined) return redisInstance
   const url = process.env.UPSTASH_REDIS_REST_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return null
-  return new Redis({ url, token })
+  if (!url || !token) {
+    redisInstance = null
+    return null
+  }
+  redisInstance = new Redis({ url, token })
+  return redisInstance
 }
 
 export async function getCachedTransaction<T>(

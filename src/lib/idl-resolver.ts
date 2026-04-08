@@ -23,7 +23,7 @@ export async function resolveProgram(programId: string): Promise<ResolvedProgram
   // 2. Try anchor.so IDL registry
   try {
     const response = await fetch(`https://api.anchor.so/idls/${programId}`, {
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(2000),
     })
     if (response.ok) {
       const idl = await response.json() as { name?: string }

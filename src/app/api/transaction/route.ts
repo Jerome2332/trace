@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateSignature } from '@/lib/signature-validator'
-import { fetchTransaction, fetchEnhancedTransaction, HeliusError } from '@/lib/helius'
-import { parseTransactionLogs } from '@/lib/log-parser'
-import { buildCpiTree, postProcessTree, findRootFailure, flattenCpiTree } from '@/lib/cpi-tree-builder'
-import { buildAccountDiffs, sortAccountDiffs } from '@/lib/account-diff-builder'
-import { resolvePrograms } from '@/lib/idl-resolver'
+import { HeliusError } from '@/lib/helius'
 import { getCachedTransaction, setCachedTransaction } from '@/lib/diagnosis-cache'
+import { buildTraceTransaction } from '@/lib/transaction-builder'
+import { checkRateLimit } from '@/lib/rate-limiter'
 import type { TraceTransaction } from '@/types/transaction'
 
 type Network = 'mainnet' | 'devnet' | 'testnet'
@@ -40,6 +38,16 @@ export async function GET(request: NextRequest) {
 
   const network = networkParam as Network
 
+  // Rate limit
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  const rateCheck = await checkRateLimit(clientIp, 'transaction', false)
+  if (!rateCheck.allowed) {
+    return NextResponse.json(
+      { error: 'RATE_LIMITED', message: 'Too many requests.', retryAfter: rateCheck.retryAfter },
+      { status: 429 }
+    )
+  }
+
   // Check cache
   const cached = await getCachedTransaction<TraceTransaction>(sig, network)
   if (cached) {
@@ -47,83 +55,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch from Helius (both calls in parallel)
-    const [txResult, enhanced] = await Promise.all([
-      fetchTransaction(sig, network),
-      fetchEnhancedTransaction(sig, network),
-    ])
+    const traceTransaction = await buildTraceTransaction(sig, network)
 
-    const meta = txResult.meta
-    const message = txResult.transaction.message
-    const warnings: string[] = []
-
-    // Parse logs
-    const rawLogs = meta?.logMessages ?? []
-    const parsedLogs = parseTransactionLogs(rawLogs)
-
-    // Check for truncated logs
-    const lastLog = rawLogs[rawLogs.length - 1]
-    if (lastLog === 'Log truncated') {
-      warnings.push('Transaction logs were truncated by the runtime. Some data may be incomplete.')
-    }
-
-    // Build CPI tree
-    const accountKeys = message.accountKeys
-    const cpiTree = buildCpiTree(parsedLogs, accountKeys.map(k => k.pubkey))
-    postProcessTree(cpiTree)
-
-    // Resolve program names
-    const allProgramIds = flattenCpiTree(cpiTree).map(n => n.programId)
-    const resolvedPrograms = await resolvePrograms(allProgramIds)
-
-    // Apply resolved names to tree
-    for (const node of flattenCpiTree(cpiTree)) {
-      const resolved = resolvedPrograms.get(node.programId)
-      if (resolved) {
-        node.programName = resolved.name
-      }
-    }
-
-    // Build account diffs
-    const accountDiffs = sortAccountDiffs(
-      buildAccountDiffs(
-        accountKeys,
-        meta?.preBalances ?? [],
-        meta?.postBalances ?? [],
-        meta?.preTokenBalances ?? [],
-        meta?.postTokenBalances ?? []
-      )
-    )
-
-    // Find failure info
-    const rootFailure = findRootFailure(cpiTree)
-
-    // Assemble TraceTransaction
-    const traceTransaction: TraceTransaction = {
-      signature: sig,
-      network,
-      status: meta?.err ? 'failed' : 'success',
-      error: meta?.err ?? null,
-      slot: txResult.slot,
-      blockTime: txResult.blockTime ?? 0,
-      fee: meta?.fee ?? 0,
-      computeUnitsConsumed: meta?.computeUnitsConsumed ?? 0,
-      txType: enhanced?.type,
-      description: enhanced?.description,
-      source: enhanced?.source,
-      cpiTree,
-      accountDiffs,
-      rawLogs,
-      parsedLogs,
-      failedProgramId: rootFailure?.programId,
-      failedInstructionName: rootFailure?.instructionName,
-      anchorErrorCode: rootFailure?.errorCode,
-      anchorErrorMessage: rootFailure?.anchorErrorName ?? rootFailure?.errorMessage,
-      warnings,
-      rawTransaction: txResult as unknown as Record<string, unknown>,
-    }
-
-    // Cache result
     await setCachedTransaction(sig, network, traceTransaction)
 
     return NextResponse.json({ data: traceTransaction })

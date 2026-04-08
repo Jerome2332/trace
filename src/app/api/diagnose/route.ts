@@ -6,11 +6,8 @@ import {
   setCachedDiagnosis,
   getCachedTransaction,
 } from '@/lib/diagnosis-cache'
-import { fetchTransaction, fetchEnhancedTransaction } from '@/lib/helius'
-import { parseTransactionLogs } from '@/lib/log-parser'
-import { buildCpiTree, postProcessTree, findRootFailure, flattenCpiTree } from '@/lib/cpi-tree-builder'
-import { buildAccountDiffs, sortAccountDiffs } from '@/lib/account-diff-builder'
-import { resolvePrograms } from '@/lib/idl-resolver'
+import { buildTraceTransaction } from '@/lib/transaction-builder'
+import { checkRateLimit } from '@/lib/rate-limiter'
 import type { TraceTransaction } from '@/types/transaction'
 import type { Diagnosis } from '@/types/diagnosis'
 
@@ -58,6 +55,16 @@ export async function POST(request: NextRequest) {
 
   const net = network as 'mainnet' | 'devnet' | 'testnet'
 
+  // Rate limit
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  const rateCheck = await checkRateLimit(clientIp, 'diagnosis', false)
+  if (!rateCheck.allowed) {
+    return NextResponse.json(
+      { error: 'RATE_LIMITED', message: 'Too many requests.', retryAfter: rateCheck.retryAfter },
+      { status: 429 }
+    )
+  }
+
   try {
     const cachedDiagnosis = await getCachedDiagnosis<Diagnosis>(signature, net)
     if (cachedDiagnosis) {
@@ -66,37 +73,8 @@ export async function POST(request: NextRequest) {
 
     let tx = await getCachedTransaction<TraceTransaction>(signature, net)
     if (!tx) {
-      // Fallback: fetch the transaction directly if not cached
       try {
-        const [txResult, enhanced] = await Promise.all([
-          fetchTransaction(signature, net),
-          fetchEnhancedTransaction(signature, net),
-        ])
-        const meta = txResult.meta
-        const message = txResult.transaction.message
-        const rawLogs = meta?.logMessages ?? []
-        const parsedLogs = parseTransactionLogs(rawLogs)
-        const cpiTree = buildCpiTree(parsedLogs, message.accountKeys.map(k => k.pubkey))
-        postProcessTree(cpiTree)
-        const resolvedPrograms = await resolvePrograms(flattenCpiTree(cpiTree).map(n => n.programId))
-        for (const node of flattenCpiTree(cpiTree)) {
-          const resolved = resolvedPrograms.get(node.programId)
-          if (resolved) node.programName = resolved.name
-        }
-        const accountDiffs = sortAccountDiffs(
-          buildAccountDiffs(message.accountKeys, meta?.preBalances ?? [], meta?.postBalances ?? [], meta?.preTokenBalances ?? [], meta?.postTokenBalances ?? [])
-        )
-        const rootFailure = findRootFailure(cpiTree)
-        tx = {
-          signature, network: net, status: meta?.err ? 'failed' : 'success', error: meta?.err ?? null,
-          slot: txResult.slot, blockTime: txResult.blockTime ?? 0, fee: meta?.fee ?? 0,
-          computeUnitsConsumed: meta?.computeUnitsConsumed ?? 0,
-          txType: enhanced?.type, description: enhanced?.description, source: enhanced?.source,
-          cpiTree, accountDiffs, rawLogs, parsedLogs,
-          failedProgramId: rootFailure?.programId, failedInstructionName: rootFailure?.instructionName,
-          anchorErrorCode: rootFailure?.errorCode, anchorErrorMessage: rootFailure?.anchorErrorName ?? rootFailure?.errorMessage,
-          warnings: [], rawTransaction: txResult as unknown as Record<string, unknown>,
-        }
+        tx = await buildTraceTransaction(signature, net)
       } catch {
         return NextResponse.json(
           { error: 'TX_NOT_CACHED', message: 'Transaction not found. Fetch it first via /api/transaction.' },
