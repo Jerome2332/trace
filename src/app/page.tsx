@@ -1,7 +1,6 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { SearchBar } from '@/components/search/SearchBar'
-import { ExampleTransactions } from '@/components/search/ExampleTransactions'
 import { HowItWorks } from '@/components/landing/HowItWorks'
 
 export default function HomePage() {
@@ -17,7 +16,6 @@ export default function HomePage() {
             Paste a signature to see the full CPI call tree, account changes, and an AI diagnosis of what went wrong.
           </p>
           <SearchBar size="hero" autoFocus />
-          <ExampleTransactions />
         </div>
         <HowItWorks />
       </main>
